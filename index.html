@@ -52,26 +52,33 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .icon-btn svg{width:16px;height:16px;stroke:var(--tm)}
 
 /* ── VIEWS ── */
-.view{display:none;padding:20px 16px calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 20px)}
+.view{display:none;padding:20px 16px calc(var(--nav-h) + 36px)}
 .view.active{display:block}
 
 /* ── BOTTOM NAV ── */
 .bottom-nav{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:430px;
-  background:var(--card);
+  background:rgba(255,255,255,.95);
   border-top:1px solid var(--border);
-  display:flex;align-items:stretch;
-  height:calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
-  padding-bottom:env(safe-area-inset-bottom, 0px);
+  display:flex;align-items:flex-start;
+  height:auto;
   z-index:300;
-  backdrop-filter:blur(12px);
-  background:rgba(255,255,255,.92);
+  flex-direction:column;
+}
+.bottom-nav::after{
+  content:'';display:block;
+  height:env(safe-area-inset-bottom, 0px);
+  width:100%;
+}
+.bottom-nav-items{
+  display:flex;width:100%;height:var(--nav-h);
 }
 .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:4px;cursor:pointer;border:none;background:transparent;
   padding:8px 4px;transition:all .15s;position:relative;
+  -webkit-tap-highlight-color:transparent;
 }
 .nav-item::before{
   content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
@@ -192,7 +199,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .modal{display:none;position:fixed;inset:0;z-index:400;align-items:flex-end;justify-content:center}
 .modal.open{display:flex}
 .mbg{position:absolute;inset:0;background:rgba(44,31,20,.28);backdrop-filter:blur(8px)}
-.mbox{position:relative;z-index:1;background:var(--card);border-radius:28px 28px 0 0;padding:20px 24px calc(40px + env(safe-area-inset-bottom, 0px));width:100%;max-width:430px;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
+.mbox{position:relative;z-index:1;background:var(--card);border-radius:28px 28px 0 0;padding:20px 24px 50px;width:100%;max-width:430px;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
 .mhdl{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
 .mtit{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:4px}
 .msub{font-size:12px;color:var(--ts);margin-bottom:14px}
@@ -387,7 +394,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .ep-name{font-family:'Cormorant Garamond',serif;font-size:24px;font-style:italic;font-weight:500;color:var(--text);text-align:center}
 .ep-meta{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:4px}
 .ep-pill{background:var(--brown-l);color:var(--brown);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-.ep-body{padding:20px 16px calc(80px + env(safe-area-inset-bottom, 0px))}
+.ep-body{padding:20px 16px 100px}
 .ep-section{background:var(--card);border-radius:20px;margin-bottom:12px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--sh)}
 .ep-section-head{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;transition:background .12s}
 .ep-section-head:hover{background:var(--brown-ll)}
@@ -413,7 +420,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .edit-modal{display:none;position:fixed;inset:0;z-index:450;align-items:flex-end;justify-content:center}
 .edit-modal.open{display:flex}
 .edit-mbg{position:absolute;inset:0;background:rgba(44,31,20,.3);backdrop-filter:blur(8px)}
-.edit-mbox{position:relative;z-index:1;background:var(--card);border-radius:28px 28px 0 0;padding:20px 22px calc(40px + env(safe-area-inset-bottom, 0px));width:100%;max-width:430px;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
+.edit-mbox{position:relative;z-index:1;background:var(--card);border-radius:28px 28px 0 0;padding:20px 22px 50px;width:100%;max-width:430px;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
 .edit-mhdl{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
 .edit-mtit{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--text);margin-bottom:18px}
 .edit-field{margin-bottom:14px}
@@ -432,7 +439,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 /* ── DAY SHEET ── */
 .dsoverlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(44,31,20,.25);backdrop-filter:blur(6px)}
 .dsoverlay.open{display:block}
-.daysheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;z-index:350;background:var(--surface);border-radius:28px 28px 0 0;padding:0 0 calc(40px + env(safe-area-inset-bottom, 0px));max-height:88vh;overflow-y:auto;transition:transform .35s cubic-bezier(.34,1.2,.64,1)}
+.daysheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;z-index:350;background:var(--surface);border-radius:28px 28px 0 0;padding:0 0 50px;max-height:88vh;overflow-y:auto;transition:transform .35s cubic-bezier(.34,1.2,.64,1)}
 .daysheet.open{transform:translateX(-50%) translateY(0)}
 .dshandle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
 .dshead{padding:16px 22px 12px;border-bottom:1px solid var(--border)}
@@ -712,6 +719,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 
 <!-- ─────────────── BOTTOM NAV ─────────────── -->
 <nav class="bottom-nav">
+  <div class="bottom-nav-items">
   <button class="nav-item active" id="nav-journal" onclick="sw('journal')">
     <div class="nav-ico">
       <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
