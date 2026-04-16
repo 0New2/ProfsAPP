@@ -207,6 +207,27 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .xbtn.d:hover{color:#C04040}
 .emptxt{text-align:center;padding:20px 0;color:var(--tl);font-size:15px;font-style:italic;font-family:'Cormorant Garamond',serif}
 
+/* ── TEMPLATES SHEET ── */
+.tpl-sheet{position:fixed;inset:0;z-index:450;display:none;align-items:flex-end;justify-content:center}
+.tpl-sheet.open{display:flex}
+.tpl-bg{position:absolute;inset:0;background:rgba(44,31,20,.3);backdrop-filter:blur(8px)}
+.tpl-box{position:relative;z-index:1;background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-width:430px;max-height:80vh;display:flex;flex-direction:column;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
+.tpl-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0}
+.tpl-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.tpl-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--text)}
+.tpl-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:16px;color:var(--ts);display:flex;align-items:center;justify-content:center}
+.tpl-scroll{overflow-y:auto;padding:14px 16px 32px;flex:1}
+.tpl-section-lbl{font-size:10px;font-weight:600;color:var(--tl);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;padding-left:2px}
+.tpl-section-lbl:first-child{margin-top:0}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
+.tpl-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:12px 12px 10px;cursor:pointer;transition:all .15s;position:relative;-webkit-tap-highlight-color:transparent}
+.tpl-card:active{transform:scale(.96);background:var(--brown-ll)}
+.tpl-card-band{height:3px;border-radius:2px;margin-bottom:10px}
+.tpl-card-emoji{font-size:22px;margin-bottom:6px;display:block;line-height:1}
+.tpl-card-name{font-family:'Cormorant Garamond',serif;font-size:15px;font-style:italic;font-weight:500;color:var(--text);line-height:1.2}
+.tpl-card-desc{font-size:10px;color:var(--ts);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tpl-card-del{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:6px;border:none;background:rgba(0,0,0,.06);color:var(--ts);font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
+.tpl-card:hover .tpl-card-del{display:flex}
 /* ── ADD FORM ── */
 .addform{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 .addform-lbl{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--tm);margin-bottom:12px}
@@ -701,6 +722,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
         <div class="addopts">
           <button class="addopt" onclick="togCpicker()"><span class="addopt-preview" id="colorPreview"></span><span>Couleur</span></button>
           <button class="addopt" onclick="togEmoji()">😊 Emoji</button>
+          <button class="addopt" onclick="saveAsTpl()">★ Garder</button>
           <div style="margin-left:auto;display:flex;align-items:center;gap:6px">
             <span style="font-size:11px;color:var(--tl)">Heure</span>
             <input class="hin" id="heureIn" type="time">
@@ -815,6 +837,19 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 </div>
 
 <!-- ─────────────── BOTTOM NAV ─────────────── -->
+<!-- TEMPLATE SHEET -->
+<div class="tpl-sheet" id="tplSheet">
+  <div class="tpl-bg" onclick="closeTplSheet()"></div>
+  <div class="tpl-box">
+    <div class="tpl-handle"></div>
+    <div class="tpl-head">
+      <div class="tpl-title">Modèles d’ateliers</div>
+      <button class="tpl-close" onclick="closeTplSheet()">×</button>
+    </div>
+    <div class="tpl-scroll" id="tplScroll"></div>
+  </div>
+</div>
+
 <div class="view-bar" id="viewBar">
   <button class="vb-btn active" id="vb-month" onclick="swJV('month')">Mois</button>
   <button class="vb-btn" id="vb-week" onclick="swJV('week')">Semaine</button>
@@ -1745,6 +1780,98 @@ function ctxDuplicate(){
 function ctxDelete(){if(ctxIdx>=0) delTS(ctxIdx);closeCtx();}
 function closeLB(){document.getElementById('lb').classList.remove('open');}
 function exportPDF(){alert('Export PDF : fonctionnalit\xe9 \xe0 venir.');}
+
+// TEMPLATES
+var DEFAULT_TPLS=[
+  {emoji:'🎨',name:'Peinture',color:'#C4956A',desc:'Pinceaux, peinture, tabliers.'},
+  {emoji:'📚',name:'Lecture',color:'#7A5C48',desc:'Album de jeunesse. Compréhension et vocabulaire.'},
+  {emoji:'🔢',name:'Numération',color:'#5A7848',desc:'Comptage, reconnaissance des chiffres.'},
+  {emoji:'✏️',name:'Écriture',color:'#486878',desc:'Graphisme, tenue du crayon, tracés dirigés.'},
+  {emoji:'✂️',name:'Découpage',color:'#A07858',desc:'Ciseaux adaptés, formes simples, motricité fine.'},
+  {emoji:'🏺',name:'Modelage',color:'#784858',desc:'Pâte à modeler ou argile. Formes, sculptures.'},
+  {emoji:'🎵',name:'Musique',color:'#486878',desc:'Instruments, comptines, écoute musicale.'},
+  {emoji:'🧮',name:'Jeux logiques',color:'#5A7848',desc:'Tri, classement, sériations, puzzles.'},
+  {emoji:'🌱',name:'Sciences',color:'#5A7848',desc:'Observation, expérimentation simple.'},
+  {emoji:'💪',name:'Motricité',color:'#C4956A',desc:'Parcours moteur, équilibre, coordination.'},
+  {emoji:'🖼️',name:'Arts plastiques',color:'#A07858',desc:'Collage, empreintes, techniques mixtes.'},
+  {emoji:'🔤',name:'Phono',color:'#7A5C48',desc:'Syllabes, rimes, sons, conscience phonologique.'},
+  {emoji:'💬',name:'Langage oral',color:'#786878',desc:'Raconte, décrit, échange. Lexique et syntaxe.'},
+  {emoji:'📝',name:'Copie',color:'#486878',desc:'Copie de prénoms, mots simples.'},
+  {emoji:'🧩',name:'Jeux symboliques',color:'#784858',desc:'Coin cuisine, marionnettes, jeu de rôles.'},
+  {emoji:'📖',name:'Bibliothèque',color:'#7A5C48',desc:'Lecture autonome, albums, documentaires.'},
+];
+
+var TPLS=lsGet('mc_tpls','null');
+if(TPLS==='null'||TPLS===null){TPLS=DEFAULT_TPLS.slice();lsSet('mc_tpls',TPLS);}
+function sTpls(){lsSet('mc_tpls',TPLS);}
+
+function openTplSheet(){rTplSheet();document.getElementById('tplSheet').classList.add('open');}
+function closeTplSheet(){document.getElementById('tplSheet').classList.remove('open');}
+
+function rTplSheet(){
+  var scroll=document.getElementById('tplScroll');if(!scroll) return;scroll.innerHTML='';
+  scroll.appendChild(div('tpl-section-lbl','Activités maternelle'));
+  var gDef=div('tpl-grid');
+  DEFAULT_TPLS.forEach(function(tpl){gDef.appendChild(mkTplCard(tpl,false,-1));});
+  scroll.appendChild(gDef);
+  var perso=TPLS.filter(function(t){
+    return !DEFAULT_TPLS.some(function(d){return d.name===t.name;});
+  });
+  if(perso.length){
+    scroll.appendChild(div('tpl-section-lbl','Mes modèles'));
+    var gPerso=div('tpl-grid');
+    perso.forEach(function(tpl){
+      gPerso.appendChild(mkTplCard(tpl,true,TPLS.indexOf(tpl)));
+    });
+    scroll.appendChild(gPerso);
+  }
+}
+
+function mkTplCard(tpl,isDel,idx){
+  var card=div('tpl-card');
+  var band=div('tpl-card-band');band.style.background=tpl.color;card.appendChild(band);
+  card.appendChild(el('span','tpl-card-emoji',tpl.emoji||''));
+  card.appendChild(div('tpl-card-name',tpl.name));
+  if(tpl.desc) card.appendChild(div('tpl-card-desc',tpl.desc));
+  if(isDel&&idx>=0){
+    (function(i){
+      var d=btn('tpl-card-del','×',function(e){
+        e.stopPropagation();TPLS.splice(i,1);sTpls();rTplSheet();
+      });
+      card.appendChild(d);
+    })(idx);
+  }
+  card.onclick=function(){applyTpl(tpl);};
+  return card;
+}
+
+function applyTpl(tpl){
+  var inp=document.getElementById('atelierIn');
+  if(inp) inp.value=tpl.name;
+  sC=tpl.color;sE=tpl.emoji||'';
+  rColors();
+  var ep=document.getElementById('emojiPre');
+  if(ep){
+    if(sE){ep.textContent=sE;ep.classList.add('has-emoji');}
+    else{ep.textContent='＋';ep.classList.remove('has-emoji');}
+  }
+  closeTplSheet();
+  setTimeout(function(){if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}},200);
+}
+
+function saveAsTpl(){
+  var inp=document.getElementById('atelierIn');
+  var txt=inp?inp.value.trim():'';
+  if(!txt){alert('Saisis dabord un titre.');return;}
+  if(TPLS.some(function(t){return t.name===txt;})){
+    if(!confirm('Un modèle "'+txt+'" existe. Remplacer ?')) return;
+    TPLS=TPLS.filter(function(t){return t.name!==txt;});
+  }
+  TPLS.push({emoji:sE||'',name:txt,color:sC,desc:''});
+  sTpls();
+  var sb=document.querySelector('[onclick="saveAsTpl()"]');
+  if(sb){var o=sb.textContent;sb.textContent='Sauvegardé ✓';setTimeout(function(){sb.textContent=o;},1500);}
+}
 
 // ── INIT
 document.addEventListener('DOMContentLoaded',function(){
