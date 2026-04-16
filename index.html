@@ -52,7 +52,7 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .icon-btn svg{width:16px;height:16px;stroke:var(--tm)}
 
 /* ── VIEWS ── */
-.view{display:none;padding:20px 16px calc(var(--nav-h) + 36px)}
+.view{display:none;padding:20px 16px calc(var(--nav-h) + 52px)}
 .view.active{display:block}
 
 /* ── BOTTOM NAV ── */
@@ -74,6 +74,44 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .bottom-nav-items{
   display:flex;width:100%;height:var(--nav-h);
 }
+/* ── BARRE VUE SECONDAIRE ── */
+.view-bar{
+  position:fixed;
+  bottom:var(--nav-h);
+  left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  z-index:299;
+  padding:8px 12px;
+  background:rgba(242,234,226,.96);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-top:1px solid var(--border);
+  display:none;
+  align-items:center;
+  gap:3px;
+  transition:opacity .2s;
+}
+.view-bar.visible{display:flex;}
+.vb-btn{
+  flex:1;padding:8px 4px;
+  text-align:center;
+  font-family:'Jost',sans-serif;
+  font-size:10px;font-weight:500;
+  color:var(--ts);letter-spacing:.3px;text-transform:uppercase;
+  border:none;background:transparent;
+  border-radius:10px;cursor:pointer;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+}
+.vb-btn::after{
+  content:'';
+  position:absolute;bottom:2px;left:50%;transform:translateX(-50%);
+  width:0;height:2px;border-radius:1px;
+  background:var(--brown);transition:width .2s cubic-bezier(.4,0,.2,1);
+}
+.vb-btn.active{color:var(--brown);font-weight:600;}
+.vb-btn.active::after{width:20px;}
 .nav-item{
   flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:4px;cursor:pointer;border:none;background:transparent;
@@ -630,13 +668,6 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 
 <!-- ─────────────── JOURNAL ─────────────── -->
 <div class="view active" id="view-journal">
-  <div class="vsrow">
-    <button class="vs active" onclick="swJV('month')">Mois</button>
-    <button class="vs" onclick="swJV('week')">Semaine</button>
-    <button class="vs" onclick="swJV('day')">Jour</button>
-    <button class="vs" onclick="swJV('period')">Période</button>
-  </div>
-
   <!-- VUE MOIS -->
   <div id="jv-month">
     <div class="monnav">
@@ -784,6 +815,13 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 </div>
 
 <!-- ─────────────── BOTTOM NAV ─────────────── -->
+<div class="view-bar" id="viewBar">
+  <button class="vb-btn active" id="vb-month" onclick="swJV('month')">Mois</button>
+  <button class="vb-btn" id="vb-week" onclick="swJV('week')">Semaine</button>
+  <button class="vb-btn" id="vb-day" onclick="swJV('day')">Jour</button>
+  <button class="vb-btn" id="vb-period" onclick="swJV('period')">Période</button>
+</div>
+
 <nav class="bottom-nav">
   <div class="bottom-nav-items">
   <button class="nav-item active" id="nav-journal" onclick="sw('journal')">
@@ -890,6 +928,9 @@ function sw(tab){
   document.querySelectorAll('.view').forEach(function(v){v.classList.remove('active');});
   document.getElementById('view-'+tab).classList.add('active');
   document.getElementById('todayBtn').style.display=tab==='journal'?'':'none';
+  // Barre vue secondaire : visible uniquement dans Journal
+  var vb=document.getElementById('viewBar');
+  if(vb) vb.classList.toggle('visible',tab==='journal');
   if(tab==='notes') rPits();
   if(tab==='ecole') rEcole();
   if(tab==='classe') renderClasse();
@@ -909,12 +950,12 @@ function updateBadges(){
 
 function swJV(v){
   jView=v;
-  document.querySelectorAll('.vs').forEach(function(b,i){
-    b.classList.toggle('active',['month','week','day','period'][i]===v);
-  });
+  // Mettre à jour les boutons de la barre secondaire
   ['month','week','day','period'].forEach(function(x){
-    var e=document.getElementById('jv-'+x);
-    if(e) e.style.display=x===v?'':'none';
+    var btn=document.getElementById('vb-'+x);
+    if(btn) btn.classList.toggle('active',x===v);
+    var pane=document.getElementById('jv-'+x);
+    if(pane) pane.style.display=x===v?'':'none';
   });
   if(v==='week') rWeek();
   if(v==='day'){tsActive=null;rDay();}
@@ -1719,6 +1760,7 @@ document.addEventListener('DOMContentLoaded',function(){
     g.appendChild(s);
   });
   rColors();rCal();rWeek();updateBadges();
+  var vb=document.getElementById('viewBar');if(vb) vb.classList.add('visible');
   document.getElementById('dsInput').addEventListener('keydown',function(e){
     if(e.key==='Enter') dsAddAtelier();
     if(e.key==='Escape') closeDaySheet();
