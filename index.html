@@ -228,6 +228,21 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .tpl-card-desc{font-size:10px;color:var(--ts);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tpl-card-del{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:6px;border:none;background:rgba(0,0,0,.06);color:var(--ts);font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
 .tpl-card:hover .tpl-card-del{display:flex}
+/* zone saisie dans le sheet */
+.tpl-input-zone{padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tpl-ain-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.tpl-emoji-pre{font-size:22px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:10px;background:var(--bg);border:1px solid var(--border);flex-shrink:0;transition:all .15s}
+.tpl-ain{flex:1;border:none;border-bottom:2px solid var(--border);background:transparent;font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--text);outline:none;padding:4px 0 8px;transition:border-color .2s}
+.tpl-ain:focus{border-bottom-color:var(--brown)}
+.tpl-ain::placeholder{color:var(--tl);font-style:italic}
+.tpl-go-btn{width:42px;height:42px;border-radius:13px;border:none;background:var(--brown);color:#fff;font-size:20px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(122,92,72,.28);transition:transform .15s}
+.tpl-go-btn:active{transform:scale(.92)}
+.tpl-row2{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.tpl-color-row{display:flex;gap:7px;flex:1}
+.tpl-cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .14s;flex-shrink:0}
+.tpl-cdot.active{border-color:var(--text);transform:scale(1.15)}
+.tpl-time-in{border:1px solid var(--border);border-radius:10px;background:var(--surface);font-family:'Jost',sans-serif;font-size:12px;color:var(--ts);outline:none;padding:6px 10px;transition:border-color .2s}
+.tpl-time-in:focus{border-color:var(--brown)}
 /* ── ADD FORM ── */
 .addform{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 .addform-lbl{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--tm);margin-bottom:12px}
@@ -711,13 +726,16 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
       </div>
       <div id="atelierList"></div>
       <div class="addform">
-        <div class="addform-lbl">Nouvel atelier.</div>
+        <div class="addform-lbl" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Nouvel atelier.</span>
+          <button onclick="openTplSheet()" style="background:var(--brown);color:#fff;border:none;border-radius:20px;padding:6px 14px;font-family:'Jost',sans-serif;font-size:11px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:5px">📚 Modèles</button>
+        </div>
         <div class="egrid" id="emojiGrid">🎨 📚 🎯 🎵 🎑 🏃 ✂ 🖌 📖 🔄 🌍 🎲 🌈 🍎 🌸 🎯 🌟 💡 🔬 🏆 🐛 🎸 🎹 ✏️ 📐 🧪 🎭 🌿 🏺 🎠</div>
         <div class="cpicker" id="cpicker"><div class="crow" id="colorRow"></div></div>
         <div class="ain-wrap">
           <div class="epre" id="emojiPre" onclick="togEmoji()">＋</div>
           <input class="ain" id="atelierIn" placeholder="Titre de l'atelier…" maxlength="60">
-          <button class="abtn" onclick="addA()">+</button>
+          <button class="abtn" id="mainAddBtn" onclick="smartAdd()">+</button>
         </div>
         <div class="addopts">
           <button class="addopt" onclick="togCpicker()"><span class="addopt-preview" id="colorPreview"></span><span>Couleur</span></button>
@@ -837,14 +855,30 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 </div>
 
 <!-- ─────────────── BOTTOM NAV ─────────────── -->
-<!-- TEMPLATE SHEET -->
+<!-- ADD ATELIER SHEET (templates + saisie) -->
 <div class="tpl-sheet" id="tplSheet">
   <div class="tpl-bg" onclick="closeTplSheet()"></div>
   <div class="tpl-box">
     <div class="tpl-handle"></div>
     <div class="tpl-head">
-      <div class="tpl-title">Modèles d’ateliers</div>
+      <div class="tpl-title">Nouvel atelier</div>
       <button class="tpl-close" onclick="closeTplSheet()">×</button>
+    </div>
+    <!-- Zone saisie rapide -->
+    <div class="tpl-input-zone" id="tplInputZone">
+      <div class="tpl-ain-wrap">
+        <div class="tpl-emoji-pre" id="tplEmojiPre">+</div>
+        <input class="tpl-ain" id="tplAtelierIn" placeholder="Titre de l’atelier…" maxlength="60">
+        <button class="tpl-go-btn" onclick="addFromSheet()">✓</button>
+      </div>
+      <div class="tpl-row2">
+        <div class="tpl-color-row" id="tplColorRow"></div>
+        <input class="tpl-time-in" type="time" id="tplHeureIn">
+      </div>
+    </div>
+    <!-- Templates -->
+    <div style="padding:0 16px 10px;text-align:right;border-bottom:1px solid var(--border);flex-shrink:0">
+      <button onclick="saveAsTpl()" style="border:none;background:transparent;font-family:'Jost',sans-serif;font-size:11px;color:var(--ts);cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:4px">★ Sauvegarder comme modèle</button>
     </div>
     <div class="tpl-scroll" id="tplScroll"></div>
   </div>
@@ -1100,6 +1134,15 @@ function rColors(){
 function togEmoji(){document.getElementById('emojiGrid').classList.toggle('open');}
 function togCpicker(){document.getElementById('cpicker').classList.toggle('open');}
 
+function smartAdd(){
+  var inp=document.getElementById('atelierIn');
+  if(!inp||!inp.value.trim()){
+    openTplSheet();
+  } else {
+    addA();
+  }
+}
+
 function addA(){
   var inp=document.getElementById('atelierIn');
   var txt=inp.value.trim();if(!txt||!sD) return;
@@ -1256,10 +1299,18 @@ function openWGEdit(key,i){
   document.getElementById('editModal').classList.add('open');
 }
 function quickAddWG(d,m,y,heure){
-  var txt=prompt('Atelier \u00e0 '+heure+' :');if(!txt||!txt.trim()) return;
-  var key=dk(y,m,d);if(!AT[key]) AT[key]=[];
-  AT[key].push({text:txt.trim(),color:COLS[0],emoji:'',heure:heure,desc:''});
-  sA();rWeek();rCal();
+  // Mémoriser le jour cible et l'heure, puis ouvrir le sheet
+  sD={d:d,m:m,y:y};
+  openTplSheet();
+  // Pré-remplir l'heure dans le sheet
+  setTimeout(function(){
+    var hInp=document.getElementById('tplHeureIn');
+    if(hInp) hInp.value=heure;
+    // Afficher l'heure sélectionnée dans le titre du sheet
+    var title=document.querySelector('.tpl-title');
+    var dow=new Date(y,m,d).getDay();
+    if(title) title.textContent=DF[dow===0?6:dow-1]+' '+d+' — '+heure;
+  },50);
 }
 
 // ── VUE JOUR
@@ -1788,14 +1839,14 @@ var DEFAULT_TPLS=[
   {emoji:'🔢',name:'Numération',color:'#5A7848',desc:'Comptage, reconnaissance des chiffres.'},
   {emoji:'✏️',name:'Écriture',color:'#486878',desc:'Graphisme, tenue du crayon, tracés dirigés.'},
   {emoji:'✂️',name:'Découpage',color:'#A07858',desc:'Ciseaux adaptés, formes simples, motricité fine.'},
-  {emoji:'🏺',name:'Modelage',color:'#784858',desc:'Pâte à modeler ou argile. Formes, sculptures.'},
+  {emoji:'🏺',name:'Modelage',color:'#784858',desc:'Pâte à modeler ou argile.'},
   {emoji:'🎵',name:'Musique',color:'#486878',desc:'Instruments, comptines, écoute musicale.'},
   {emoji:'🧮',name:'Jeux logiques',color:'#5A7848',desc:'Tri, classement, sériations, puzzles.'},
   {emoji:'🌱',name:'Sciences',color:'#5A7848',desc:'Observation, expérimentation simple.'},
   {emoji:'💪',name:'Motricité',color:'#C4956A',desc:'Parcours moteur, équilibre, coordination.'},
   {emoji:'🖼️',name:'Arts plastiques',color:'#A07858',desc:'Collage, empreintes, techniques mixtes.'},
-  {emoji:'🔤',name:'Phono',color:'#7A5C48',desc:'Syllabes, rimes, sons, conscience phonologique.'},
-  {emoji:'💬',name:'Langage oral',color:'#786878',desc:'Raconte, décrit, échange. Lexique et syntaxe.'},
+  {emoji:'🔤',name:'Phono',color:'#7A5C48',desc:'Syllabes, rimes, sons.'},
+  {emoji:'💬',name:'Langage oral',color:'#786878',desc:'Raconte, décrit, échange.'},
   {emoji:'📝',name:'Copie',color:'#486878',desc:'Copie de prénoms, mots simples.'},
   {emoji:'🧩',name:'Jeux symboliques',color:'#784858',desc:'Coin cuisine, marionnettes, jeu de rôles.'},
   {emoji:'📖',name:'Bibliothèque',color:'#7A5C48',desc:'Lecture autonome, albums, documentaires.'},
@@ -1805,15 +1856,44 @@ var TPLS=lsGet('mc_tpls','null');
 if(TPLS==='null'||TPLS===null){TPLS=DEFAULT_TPLS.slice();lsSet('mc_tpls',TPLS);}
 function sTpls(){lsSet('mc_tpls',TPLS);}
 
-function openTplSheet(){rTplSheet();document.getElementById('tplSheet').classList.add('open');}
-function closeTplSheet(){document.getElementById('tplSheet').classList.remove('open');}
+// Couleur sélectionnée dans le sheet
+var tplColor=COLS[0],tplEmoji='';
+
+function openTplSheet(){
+  tplColor=COLS[0];tplEmoji='';
+  rTplColors();
+  var inp=document.getElementById('tplAtelierIn');if(inp) inp.value='';
+  var hInp=document.getElementById('tplHeureIn');if(hInp) hInp.value='';
+  var ep=document.getElementById('tplEmojiPre');if(ep) ep.textContent='+';
+  rTplSheet();
+  document.getElementById('tplSheet').classList.add('open');
+  setTimeout(function(){var i=document.getElementById('tplAtelierIn');if(i) i.focus();},300);
+}
+function closeTplSheet(){
+  document.getElementById('tplSheet').classList.remove('open');
+  var title=document.querySelector('.tpl-title');
+  if(title) title.textContent='Nouvel atelier';
+}
+
+function rTplColors(){
+  var row=document.getElementById('tplColorRow');if(!row) return;row.innerHTML='';
+  COLS.forEach(function(col){
+    var d=div('tpl-cdot'+(col===tplColor?' active':''));
+    d.style.background=col;
+    d.onclick=function(){tplColor=col;rTplColors();};
+    row.appendChild(d);
+  });
+}
 
 function rTplSheet(){
-  var scroll=document.getElementById('tplScroll');if(!scroll) return;scroll.innerHTML='';
+  var scroll=document.getElementById('tplScroll');if(!scroll) return;
+  scroll.innerHTML='';
+  // Templates par défaut
   scroll.appendChild(div('tpl-section-lbl','Activités maternelle'));
   var gDef=div('tpl-grid');
   DEFAULT_TPLS.forEach(function(tpl){gDef.appendChild(mkTplCard(tpl,false,-1));});
   scroll.appendChild(gDef);
+  // Mes modèles perso
   var perso=TPLS.filter(function(t){
     return !DEFAULT_TPLS.some(function(d){return d.name===t.name;});
   });
@@ -1841,37 +1921,60 @@ function mkTplCard(tpl,isDel,idx){
       card.appendChild(d);
     })(idx);
   }
-  card.onclick=function(){applyTpl(tpl);};
+  // Tap = pré-remplir le formulaire dans le sheet ET ajouter direct
+  card.onclick=function(){
+    tplColor=tpl.color;tplEmoji=tpl.emoji||'';
+    var inp=document.getElementById('tplAtelierIn');
+    if(inp){
+      inp.value=tpl.name;
+      // Mettre à jour l'emoji preview
+      var ep=document.getElementById('tplEmojiPre');
+      if(ep) ep.textContent=tpl.emoji||'+';
+    }
+    rTplColors();
+    // Scroll vers le haut pour voir le formulaire
+    var scroll=document.getElementById('tplScroll');
+    var box=document.querySelector('.tpl-box');
+    if(box) box.scrollTop=0;
+    // Focus sur l'input
+    if(inp) inp.focus();
+  };
   return card;
 }
 
-function applyTpl(tpl){
-  var inp=document.getElementById('atelierIn');
-  if(inp) inp.value=tpl.name;
-  sC=tpl.color;sE=tpl.emoji||'';
-  rColors();
-  var ep=document.getElementById('emojiPre');
-  if(ep){
-    if(sE){ep.textContent=sE;ep.classList.add('has-emoji');}
-    else{ep.textContent='＋';ep.classList.remove('has-emoji');}
-  }
+function addFromSheet(){
+  var inp=document.getElementById('tplAtelierIn');
+  var txt=inp?inp.value.trim():'';
+  if(!txt||!sD) return;
+  var key=dk(sD.y,sD.m,sD.d);
+  if(!AT[key]) AT[key]=[];
+  AT[key].push({
+    text:txt,color:tplColor,emoji:tplEmoji,
+    heure:document.getElementById('tplHeureIn').value||'',
+    desc:''
+  });
+  sA();
   closeTplSheet();
-  setTimeout(function(){if(inp){inp.focus();inp.setSelectionRange(inp.value.length,inp.value.length);}},200);
+  rDP();rCal();
+  if(jView==='week') rWeek();
+  if(jView==='day'){tsActive=null;rDay();}
+  updateBadges();
 }
 
 function saveAsTpl(){
-  var inp=document.getElementById('atelierIn');
+  var inp=document.getElementById('tplAtelierIn');
   var txt=inp?inp.value.trim():'';
-  if(!txt){alert('Saisis dabord un titre.');return;}
+  if(!txt){alert('Saisis d’abord un titre.');return;}
   if(TPLS.some(function(t){return t.name===txt;})){
     if(!confirm('Un modèle "'+txt+'" existe. Remplacer ?')) return;
     TPLS=TPLS.filter(function(t){return t.name!==txt;});
   }
-  TPLS.push({emoji:sE||'',name:txt,color:sC,desc:''});
-  sTpls();
-  var sb=document.querySelector('[onclick="saveAsTpl()"]');
-  if(sb){var o=sb.textContent;sb.textContent='Sauvegardé ✓';setTimeout(function(){sb.textContent=o;},1500);}
+  TPLS.push({emoji:tplEmoji,name:txt,color:tplColor,desc:''});
+  sTpls();rTplSheet();
+  var sb=document.querySelector('.tpl-go-btn');
+  if(sb){var o=sb.textContent;sb.textContent='★';setTimeout(function(){sb.textContent=o;},1000);}
 }
+
 
 // ── INIT
 document.addEventListener('DOMContentLoaded',function(){
@@ -1888,6 +1991,8 @@ document.addEventListener('DOMContentLoaded',function(){
   });
   rColors();rCal();rWeek();updateBadges();
   var vb=document.getElementById('viewBar');if(vb) vb.classList.add('visible');
+  var tplInp=document.getElementById('tplAtelierIn');
+  if(tplInp) tplInp.addEventListener('keydown',function(e){if(e.key==='Enter') addFromSheet();});
   document.getElementById('dsInput').addEventListener('keydown',function(e){
     if(e.key==='Enter') dsAddAtelier();
     if(e.key==='Escape') closeDaySheet();
