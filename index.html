@@ -211,12 +211,12 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .tpl-sheet{position:fixed;inset:0;z-index:450;display:none;align-items:flex-end;justify-content:center}
 .tpl-sheet.open{display:flex}
 .tpl-bg{position:absolute;inset:0;background:rgba(44,31,20,.3);backdrop-filter:blur(8px)}
-.tpl-box{position:relative;z-index:1;background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-width:430px;max-height:80vh;display:flex;flex-direction:column;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
+.tpl-box{position:relative;z-index:1;background:var(--surface);border-radius:28px 28px 0 0;width:100%;max-width:430px;max-height:88vh;display:flex;flex-direction:column;animation:su .3s cubic-bezier(.34,1.4,.64,1)}
 .tpl-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0;flex-shrink:0}
 .tpl-head{padding:16px 20px 12px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
 .tpl-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;color:var(--text)}
 .tpl-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer;font-size:16px;color:var(--ts);display:flex;align-items:center;justify-content:center}
-.tpl-scroll{overflow-y:auto;padding:14px 16px 32px;flex:1}
+.tpl-scroll{overflow-y:auto;padding:12px 14px 6px;flex:1;min-height:0}
 .tpl-section-lbl{font-size:10px;font-weight:600;color:var(--tl);text-transform:uppercase;letter-spacing:1.5px;margin:14px 0 8px;padding-left:2px}
 .tpl-section-lbl:first-child{margin-top:0}
 .tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:6px}
@@ -228,8 +228,12 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .tpl-card-desc{font-size:10px;color:var(--ts);margin-top:3px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .tpl-card-del{position:absolute;top:8px;right:8px;width:20px;height:20px;border-radius:6px;border:none;background:rgba(0,0,0,.06);color:var(--ts);font-size:12px;cursor:pointer;display:none;align-items:center;justify-content:center}
 .tpl-card:hover .tpl-card-del{display:flex}
+.tpl-divider{flex-shrink:0;display:flex;align-items:center;gap:10px;padding:0 16px;margin:0;font-size:11px;font-weight:500;color:var(--tl);text-transform:uppercase;letter-spacing:.5px;border-top:1px solid var(--border);padding-top:10px;padding-bottom:2px;background:var(--surface)}
+.tpl-divider::before,.tpl-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.tpl-save-lnk{background:none;border:none;font-family:'Jost',sans-serif;font-size:11px;color:var(--ts);cursor:pointer;padding:8px 0 0;display:flex;align-items:center;gap:5px;transition:color .15s}
+.tpl-save-lnk:hover{color:var(--brown)}
 /* zone saisie dans le sheet */
-.tpl-input-zone{padding:14px 16px 10px;border-bottom:1px solid var(--border);flex-shrink:0}
+.tpl-input-zone{padding:10px 16px 16px;flex-shrink:0}
 .tpl-ain-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .tpl-emoji-pre{font-size:22px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:10px;background:var(--bg);border:1px solid var(--border);flex-shrink:0;transition:all .15s}
 .tpl-ain{flex:1;border:none;border-bottom:2px solid var(--border);background:transparent;font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--text);outline:none;padding:4px 0 8px;transition:border-color .2s}
@@ -241,8 +245,65 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 .tpl-color-row{display:flex;gap:7px;flex:1}
 .tpl-cdot{width:22px;height:22px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .14s;flex-shrink:0}
 .tpl-cdot.active{border-color:var(--text);transform:scale(1.15)}
-.tpl-time-in{border:1px solid var(--border);border-radius:10px;background:var(--surface);font-family:'Jost',sans-serif;font-size:12px;color:var(--ts);outline:none;padding:6px 10px;transition:border-color .2s}
-.tpl-time-in:focus{border-color:var(--brown)}
+/* ── TIME PICKER ── */
+.tp-trigger{
+  display:flex;align-items:center;gap:6px;
+  border:1px solid var(--border);border-radius:22px;
+  padding:6px 14px;background:var(--surface);
+  cursor:pointer;transition:all .15s;flex-shrink:0;
+  font-family:'Jost',sans-serif;font-size:12px;font-weight:500;
+  color:var(--brown);-webkit-tap-highlight-color:transparent;
+}
+.tp-trigger:active{background:var(--brown-l)}
+.tp-trigger.has-val{background:var(--brown);color:#fff;border-color:var(--brown)}
+.tp-sheet{
+  position:fixed;inset:0;z-index:600;
+  display:none;align-items:flex-end;justify-content:center;
+}
+.tp-sheet.open{display:flex}
+.tp-bg{position:absolute;inset:0;background:rgba(44,31,20,.3);backdrop-filter:blur(8px)}
+.tp-box{
+  position:relative;z-index:1;
+  background:var(--card);border-radius:28px 28px 0 0;
+  width:100%;max-width:430px;
+  padding:0 0 32px;
+  animation:su .3s cubic-bezier(.34,1.4,.64,1);
+}
+.tp-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.tp-head{padding:16px 20px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.tp-head-lbl{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--text)}
+.tp-confirm{background:var(--brown);color:#fff;border:none;border-radius:20px;padding:8px 22px;font-family:'Jost',sans-serif;font-size:13px;font-weight:500;cursor:pointer}
+.tp-cols{display:flex;gap:0;padding:0 16px}
+.tp-col-wrap{flex:1;display:flex;flex-direction:column;align-items:center}
+.tp-col-lbl{font-size:10px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:.8px;margin:12px 0 6px}
+.tp-drum-wrap{position:relative;height:168px;overflow:hidden;width:100%}
+.tp-drum-wrap::before,.tp-drum-wrap::after{
+  content:'';position:absolute;left:0;right:0;height:60px;z-index:2;pointer-events:none;
+}
+.tp-drum-wrap::before{top:0;background:linear-gradient(to bottom,var(--card),transparent)}
+.tp-drum-wrap::after{bottom:0;background:linear-gradient(to top,var(--card),transparent)}
+.tp-selector{
+  position:absolute;top:50%;left:8px;right:8px;
+  transform:translateY(-50%);
+  height:40px;border-radius:12px;
+  background:var(--brown-ll);border:1.5px solid var(--brown-l);
+  pointer-events:none;z-index:1;
+}
+.tp-drum{
+  height:100%;overflow-y:scroll;scroll-snap-type:y mandatory;
+  scrollbar-width:none;-ms-overflow-style:none;
+  padding:64px 0;
+}
+.tp-drum::-webkit-scrollbar{display:none}
+.tp-item{
+  height:40px;display:flex;align-items:center;justify-content:center;
+  scroll-snap-align:center;
+  font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;
+  color:var(--ts);transition:color .15s,font-size .15s;cursor:pointer;
+  user-select:none;-webkit-user-select:none;
+}
+.tp-item.active{color:var(--brown);font-size:20px;font-weight:500}
+.tp-sep{width:1px;background:var(--border);margin:40px 0;flex-shrink:0}
 /* ── ADD FORM ── */
 .addform{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
 .addform-lbl{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--tm);margin-bottom:12px}
@@ -855,35 +916,70 @@ body{font-family:'Jost',sans-serif;background:var(--bg);color:var(--text);max-wi
 </div>
 
 <!-- ─────────────── BOTTOM NAV ─────────────── -->
-<!-- ADD ATELIER SHEET (templates + saisie) -->
+<!-- TIME PICKER SHEET -->
+<div class="tp-sheet" id="tpSheet">
+  <div class="tp-bg" onclick="closeTimePicker()"></div>
+  <div class="tp-box">
+    <div class="tp-handle"></div>
+    <div class="tp-head">
+      <div class="tp-head-lbl">Heure &amp; durée</div>
+      <button class="tp-confirm" onclick="confirmTimePicker()">OK</button>
+    </div>
+    <div class="tp-cols">
+      <div class="tp-col-wrap">
+        <div class="tp-col-lbl">Début</div>
+        <div class="tp-drum-wrap">
+          <div class="tp-selector"></div>
+          <div class="tp-drum" id="tpDrumH" onscroll="onDrumScroll(this,'h')"></div>
+        </div>
+      </div>
+      <div class="tp-sep"></div>
+      <div class="tp-col-wrap">
+        <div class="tp-col-lbl">Durée</div>
+        <div class="tp-drum-wrap">
+          <div class="tp-selector"></div>
+          <div class="tp-drum" id="tpDrumD" onscroll="onDrumScroll(this,'d')"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD ATELIER SHEET -->
 <div class="tpl-sheet" id="tplSheet">
   <div class="tpl-bg" onclick="closeTplSheet()"></div>
   <div class="tpl-box">
     <div class="tpl-handle"></div>
     <div class="tpl-head">
-      <div class="tpl-title">Nouvel atelier</div>
+      <div class="tpl-title" id="tplTitle">Nouvel atelier</div>
       <button class="tpl-close" onclick="closeTplSheet()">×</button>
     </div>
-    <!-- Zone saisie rapide -->
+
+    <!-- Templates en haut : visibles direct, tap = ajout immédiat -->
+    <div class="tpl-scroll" id="tplScroll"></div>
+
+    <!-- Séparateur -->
+    <div class="tpl-divider">ou créer un atelier</div>
+
+    <!-- Formulaire custom en bas -->
     <div class="tpl-input-zone" id="tplInputZone">
       <div class="tpl-ain-wrap">
-        <div class="tpl-emoji-pre" id="tplEmojiPre">+</div>
-        <input class="tpl-ain" id="tplAtelierIn" placeholder="Titre de l’atelier…" maxlength="60">
+        <div class="tpl-emoji-pre" id="tplEmojiPre" onclick="cycleTplEmoji()">+</div>
+        <input class="tpl-ain" id="tplAtelierIn" placeholder="Titre personnalisé…" maxlength="60">
         <button class="tpl-go-btn" onclick="addFromSheet()">✓</button>
       </div>
       <div class="tpl-row2">
         <div class="tpl-color-row" id="tplColorRow"></div>
-        <input class="tpl-time-in" type="time" id="tplHeureIn">
+        <button class="tp-trigger" id="tpTrigger" onclick="openTimePicker()">
+          <span>🕐</span><span id="tpLabel">Heure &amp; durée</span>
+        </button>
+        <input type="hidden" id="tplHeureIn">
+        <input type="hidden" id="tplDureeIn">
       </div>
+      <button class="tpl-save-lnk" onclick="saveAsTpl()">★ Sauvegarder comme modèle</button>
     </div>
-    <!-- Templates -->
-    <div style="padding:0 16px 10px;text-align:right;border-bottom:1px solid var(--border);flex-shrink:0">
-      <button onclick="saveAsTpl()" style="border:none;background:transparent;font-family:'Jost',sans-serif;font-size:11px;color:var(--ts);cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:4px">★ Sauvegarder comme modèle</button>
-    </div>
-    <div class="tpl-scroll" id="tplScroll"></div>
   </div>
 </div>
-
 <div class="view-bar" id="viewBar">
   <button class="vb-btn active" id="vb-month" onclick="swJV('month')">Mois</button>
   <button class="vb-btn" id="vb-week" onclick="swJV('week')">Semaine</button>
@@ -1304,10 +1400,21 @@ function quickAddWG(d,m,y,heure){
   openTplSheet();
   // Pré-remplir l'heure dans le sheet
   setTimeout(function(){
-    var hInp=document.getElementById('tplHeureIn');
-    if(hInp) hInp.value=heure;
-    // Afficher l'heure sélectionnée dans le titre du sheet
-    var title=document.querySelector('.tpl-title');
+    // Sélectionner l'heure dans le drum
+    var hIdx=TP_HOURS.indexOf(heure);
+    if(hIdx>=0){
+      tpSelH=hIdx;
+      // Mettre à jour le trigger visuellement sans ouvrir le picker
+      var hInp=document.getElementById('tplHeureIn');
+      if(hInp) hInp.value=heure;
+      var lbl=document.getElementById('tpLabel');
+      var dInp=document.getElementById('tplDureeIn');
+      var duree=TP_DUREES[tpSelD];
+      if(lbl) lbl.textContent=heure+(duree?' • '+duree.lbl:'');
+      var trig=document.getElementById('tpTrigger');
+      if(trig) trig.classList.add('has-val');
+    }
+    var title=document.getElementById('tplTitle');
     var dow=new Date(y,m,d).getDay();
     if(title) title.textContent=DF[dow===0?6:dow-1]+' '+d+' — '+heure;
   },50);
@@ -1832,6 +1939,87 @@ function ctxDelete(){if(ctxIdx>=0) delTS(ctxIdx);closeCtx();}
 function closeLB(){document.getElementById('lb').classList.remove('open');}
 function exportPDF(){alert('Export PDF : fonctionnalit\xe9 \xe0 venir.');}
 
+// ── TIME PICKER
+var TP_HOURS=[
+  '08:00','08:30','09:00','09:30','10:00','10:30',
+  '11:00','11:30','13:00','13:30','14:00','14:30',
+  '15:00','15:30','16:00','16:30','17:00'
+];
+var TP_DUREES=[
+  {lbl:'15 min',val:'15'},
+  {lbl:'30 min',val:'30'},
+  {lbl:'45 min',val:'45'},
+  {lbl:'1 h',val:'60'},
+  {lbl:'1 h 30',val:'90'},
+  {lbl:'2 h',val:'120'},
+  {lbl:'2 h 30',val:'150'},
+  {lbl:'3 h',val:'180'},
+];
+var tpSelH=2; // 09:00 par défaut
+var tpSelD=1; // 30 min par défaut
+var tpScrollT=null;
+
+function openTimePicker(){
+  buildDrum('tpDrumH', TP_HOURS.map(function(h){return h;}), tpSelH);
+  buildDrum('tpDrumD', TP_DUREES.map(function(d){return d.lbl;}), tpSelD);
+  document.getElementById('tpSheet').classList.add('open');
+}
+function closeTimePicker(){document.getElementById('tpSheet').classList.remove('open');}
+
+function buildDrum(id, items, selIdx){
+  var drum=document.getElementById(id);if(!drum) return;
+  drum.innerHTML='';
+  items.forEach(function(item, i){
+    var el2=div('tp-item'+(i===selIdx?' active':''), item);
+    el2.onclick=function(){
+      var idx=Array.from(drum.children).indexOf(el2);
+      scrollToIdx(drum, idx);
+    };
+    drum.appendChild(el2);
+  });
+  // Scroll vers la sélection courante
+  setTimeout(function(){scrollToIdx(drum, selIdx, true);}, 50);
+}
+
+function scrollToIdx(drum, idx, instant){
+  var itemH=40;
+  drum.scrollTo({top: idx*itemH, behavior: instant?'instant':'smooth'});
+}
+
+function onDrumScroll(drum, which){
+  clearTimeout(tpScrollT);
+  tpScrollT=setTimeout(function(){snapDrum(drum, which);}, 80);
+}
+
+function snapDrum(drum, which){
+  var itemH=40;
+  var idx=Math.round(drum.scrollTop/itemH);
+  var items=drum.querySelectorAll ? Array.from(drum.querySelectorAll('.tp-item')) : [];
+  var maxIdx = (which==='h' ? TP_HOURS.length : TP_DUREES.length) - 1;
+  idx=Math.max(0,Math.min(idx, maxIdx));
+  drum.scrollTo({top: idx*itemH, behavior:'smooth'});
+  // Mettre à jour la classe active
+  items.forEach(function(it, i){it.classList.toggle('active', i===idx);});
+  if(which==='h') tpSelH=idx;
+  else tpSelD=idx;
+}
+
+function confirmTimePicker(){
+  var heure=TP_HOURS[tpSelH]||'';
+  var duree=TP_DUREES[tpSelD];
+  // Stocker dans les inputs cachés
+  var hInp=document.getElementById('tplHeureIn');
+  var dInp=document.getElementById('tplDureeIn');
+  if(hInp) hInp.value=heure;
+  if(dInp) dInp.value=duree?duree.val:'';
+  // Mettre à jour le trigger
+  var lbl=document.getElementById('tpLabel');
+  if(lbl) lbl.textContent=heure+(duree?' \u2022 '+duree.lbl:'');
+  var trigger=document.getElementById('tpTrigger');
+  if(trigger) trigger.classList.add('has-val');
+  closeTimePicker();
+}
+
 // TEMPLATES
 var DEFAULT_TPLS=[
   {emoji:'🎨',name:'Peinture',color:'#C4956A',desc:'Pinceaux, peinture, tabliers.'},
@@ -1859,11 +2047,23 @@ function sTpls(){lsSet('mc_tpls',TPLS);}
 // Couleur sélectionnée dans le sheet
 var tplColor=COLS[0],tplEmoji='';
 
+function cycleTplEmoji(){
+  var emojis=DEFAULT_TPLS.map(function(t){return t.emoji;});
+  var cur=tplEmoji||'';
+  var idx=emojis.indexOf(cur);
+  tplEmoji=emojis[(idx+1)%emojis.length];
+  var ep=document.getElementById('tplEmojiPre');
+  if(ep) ep.textContent=tplEmoji;
+}
+
 function openTplSheet(){
   tplColor=COLS[0];tplEmoji='';
   rTplColors();
   var inp=document.getElementById('tplAtelierIn');if(inp) inp.value='';
   var hInp=document.getElementById('tplHeureIn');if(hInp) hInp.value='';
+  var dInp=document.getElementById('tplDureeIn');if(dInp) dInp.value='';
+  var lbl=document.getElementById('tpLabel');if(lbl) lbl.textContent='Heure & durée';
+  var trig=document.getElementById('tpTrigger');if(trig) trig.classList.remove('has-val');
   var ep=document.getElementById('tplEmojiPre');if(ep) ep.textContent='+';
   rTplSheet();
   document.getElementById('tplSheet').classList.add('open');
@@ -1888,23 +2088,23 @@ function rTplColors(){
 function rTplSheet(){
   var scroll=document.getElementById('tplScroll');if(!scroll) return;
   scroll.innerHTML='';
-  // Templates par défaut
-  scroll.appendChild(div('tpl-section-lbl','Activités maternelle'));
-  var gDef=div('tpl-grid');
-  DEFAULT_TPLS.forEach(function(tpl){gDef.appendChild(mkTplCard(tpl,false,-1));});
-  scroll.appendChild(gDef);
-  // Mes modèles perso
+  // Mes modèles perso EN PREMIER
   var perso=TPLS.filter(function(t){
     return !DEFAULT_TPLS.some(function(d){return d.name===t.name;});
   });
   if(perso.length){
-    scroll.appendChild(div('tpl-section-lbl','Mes modèles'));
+    scroll.appendChild(div('tpl-section-lbl','Mes modèles ★'));
     var gPerso=div('tpl-grid');
     perso.forEach(function(tpl){
       gPerso.appendChild(mkTplCard(tpl,true,TPLS.indexOf(tpl)));
     });
     scroll.appendChild(gPerso);
   }
+  // Templates maternelle
+  scroll.appendChild(div('tpl-section-lbl','Activités maternelle'));
+  var gDef=div('tpl-grid');
+  DEFAULT_TPLS.forEach(function(tpl){gDef.appendChild(mkTplCard(tpl,false,-1));});
+  scroll.appendChild(gDef);
 }
 
 function mkTplCard(tpl,isDel,idx){
@@ -1921,23 +2121,23 @@ function mkTplCard(tpl,isDel,idx){
       card.appendChild(d);
     })(idx);
   }
-  // Tap = pré-remplir le formulaire dans le sheet ET ajouter direct
+  // Tap = ajout DIRECT dans le jour/heure courant
   card.onclick=function(){
-    tplColor=tpl.color;tplEmoji=tpl.emoji||'';
-    var inp=document.getElementById('tplAtelierIn');
-    if(inp){
-      inp.value=tpl.name;
-      // Mettre à jour l'emoji preview
-      var ep=document.getElementById('tplEmojiPre');
-      if(ep) ep.textContent=tpl.emoji||'+';
-    }
-    rTplColors();
-    // Scroll vers le haut pour voir le formulaire
-    var scroll=document.getElementById('tplScroll');
-    var box=document.querySelector('.tpl-box');
-    if(box) box.scrollTop=0;
-    // Focus sur l'input
-    if(inp) inp.focus();
+    if(!sD) return;
+    var key=dk(sD.y,sD.m,sD.d);
+    if(!AT[key]) AT[key]=[];
+    var heure=document.getElementById('tplHeureIn').value||'';
+    var duree=document.getElementById('tplDureeIn');
+    AT[key].push({text:tpl.name,color:tpl.color,emoji:tpl.emoji||'',heure:heure,duree:duree?duree.value:'',desc:tpl.desc||''});
+    sA();
+    closeTplSheet();
+    rDP();rCal();
+    if(jView==='week') rWeek();
+    if(jView==='day'){tsActive=null;rDay();}
+    updateBadges();
+    // Feedback visuel rapide
+    card.style.background='var(--brown-ll)';
+    card.style.transform='scale(.96)';
   };
   return card;
 }
@@ -1951,6 +2151,7 @@ function addFromSheet(){
   AT[key].push({
     text:txt,color:tplColor,emoji:tplEmoji,
     heure:document.getElementById('tplHeureIn').value||'',
+    duree:document.getElementById('tplDureeIn').value||'',
     desc:''
   });
   sA();
