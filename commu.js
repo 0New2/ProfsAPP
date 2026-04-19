@@ -179,6 +179,52 @@ function openPublishSheet() {
   document.querySelectorAll('#pubNiveaux .pub-chip, #pubDomaines .pub-chip').forEach(function(c) {
     c.classList.remove('active');
   });
+
+  // ── Picker ateliers existants
+  var picker = document.getElementById('pubAtelierPicker');
+  if (picker) {
+    picker.innerHTML = '';
+    // Collecter tous les ateliers de tous les jours
+    var tous = [];
+    Object.keys(AT).forEach(function(date) {
+      (AT[date] || []).forEach(function(a) {
+        var nom = a.text || a.titre || '';
+        if (nom && !tous.find(function(x){return x.nom===nom;})) {
+          tous.push({nom:nom, emoji:a.emoji||'', color:a.color||COLS[0]});
+        }
+      });
+    });
+    if (tous.length) {
+      var lbl = document.createElement('div');
+      lbl.style.cssText = 'font-size:10px;font-weight:600;color:var(--ts);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px';
+      lbl.textContent = 'Depuis mes ateliers';
+      picker.appendChild(lbl);
+      var grid = document.createElement('div');
+      grid.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px';
+      tous.forEach(function(a) {
+        var b = document.createElement('button');
+        b.style.cssText = 'border:1px solid var(--border);border-radius:20px;padding:6px 12px;background:transparent;font-family:Jost,sans-serif;font-size:12px;color:var(--text);cursor:pointer;display:flex;align-items:center;gap:5px;-webkit-tap-highlight-color:transparent';
+        b.innerHTML = (a.emoji?'<span>'+a.emoji+'</span>':'') + '<span>'+a.nom+'</span>';
+        b.onclick = function() {
+          document.getElementById('pubTitle').value = a.nom;
+          document.getElementById('pubEmoji').textContent = a.emoji || '🎨';
+          pubEmoji = a.emoji || '🎨';
+          pubColor = a.color;
+          // Mettre à jour la couleur active
+          document.querySelectorAll('#pubColorRow .tpl-cdot').forEach(function(x){x.classList.remove('active');});
+          var matching = Array.from(document.querySelectorAll('#pubColorRow .tpl-cdot')).find(function(x){return x.style.background===a.color;});
+          if (matching) matching.classList.add('active');
+          // Feedback
+          b.style.borderColor = 'var(--brown)';
+          b.style.background = 'var(--brown-ll)';
+          setTimeout(function(){b.style.borderColor='';b.style.background='';},400);
+        };
+        grid.appendChild(b);
+      });
+      picker.appendChild(grid);
+    }
+  }
+
   // Couleurs
   var cr = document.getElementById('pubColorRow'); cr.innerHTML = '';
   COLS.forEach(function(col) {

@@ -180,13 +180,16 @@ function rDP() {
   if (!lst.length) { cont.appendChild(div('emptxt','Aucun atelier prévu')); return; }
   lst.forEach(function(a, i) {
     var row  = div('arow');
-    var bar  = div('abar'); bar.style.background = a.color; row.appendChild(bar);
+    var bar  = div('abar'); bar.style.background = a.color || COLS[0]; row.appendChild(bar);
     var body = div('arow-body');
-    var ico  = div('arow-ico', a.emoji || '');
-    if (!a.emoji) { var sp=el('span'); sp.style.cssText='font-size:12px;color:var(--tl)'; sp.textContent='◈'; ico.appendChild(sp); }
+    var emoji = a.emoji || a.icon || '';
+    var ico  = div('arow-ico', emoji);
+    if (!emoji) { var sp=el('span'); sp.style.cssText='font-size:12px;color:var(--tl)'; sp.textContent='◈'; ico.textContent=''; ico.appendChild(sp); }
     body.appendChild(ico);
     var info = div('arow-info');
-    info.appendChild(div('arow-name', a.text));
+    // Support text ou titre selon le format de stockage
+    var titre = a.text || a.titre || a.name || a.nom || '(sans titre)';
+    info.appendChild(div('arow-name', titre));
     var meta = (a.heure||'') + (a.duree ? ' · '+a.duree+'min' : '');
     info.appendChild(div('arow-meta', meta));
     body.appendChild(info);
@@ -333,7 +336,8 @@ function mkDayCard(a, i, key) {
   left.appendChild(ico);
   var info = div('tscard-info');
   if (a.heure) info.appendChild(div('tscard-time', a.heure+(a.duree?' · '+a.duree+'min':'')));
-  info.appendChild(div('tscard-name', a.text));
+  var titre = a.text || a.titre || a.name || '(sans titre)';
+  info.appendChild(div('tscard-name', titre));
   left.appendChild(info); top.appendChild(left);
   var acts = div('tscard-acts');
   (function(idx) {
@@ -732,25 +736,37 @@ function mkTplCard(tpl, isDel, idx) {
   }
   // Tap = ajout direct
   card.onclick = function() {
-    if (!sD) return;
+    if (!sD) sD={d:T.getDate(),m:T.getMonth(),y:T.getFullYear()};
     var key=dk(sD.y,sD.m,sD.d); if(!AT[key]) AT[key]=[];
     var heure=document.getElementById('tplHeureIn').value||'';
     var duree=document.getElementById('tplDureeIn').value||'';
-    AT[key].push({text:tpl.name,color:tpl.color,emoji:tpl.emoji||'',heure:heure,duree:duree,desc:tpl.desc||''});
+    var nom=tpl.name||tpl.titre||tpl.text||'Atelier';
+    AT[key].push({text:nom,titre:nom,color:tpl.color,emoji:tpl.emoji||'',heure:heure,duree:duree,desc:tpl.desc||''});
     saveAtelier(key); closeTplSheet(); rDP(); rCal();
     if (jView==='week') rWeek();
     if (jView==='day') {tsActive=null;rDay();}
     updateBadges();
-    showToast((tpl.emoji?tpl.emoji+' ':'')+tpl.name+' ajouté ✓');
+    showToast((tpl.emoji?tpl.emoji+' ':'')+nom+' ajouté ✓');
   };
   return card;
 }
 
 function addFromSheet() {
   var inp=document.getElementById('tplAtelierIn'); var txt=inp?inp.value.trim():'';
-  if (!txt||!sD) { showToast('Saisis un titre.'); return; }
+  if (!txt) { showToast('Saisis un titre.'); return; }
+  // Si sD pas défini, utiliser aujourd'hui
+  if (!sD) sD={d:T.getDate(),m:T.getMonth(),y:T.getFullYear()};
   var key=dk(sD.y,sD.m,sD.d); if(!AT[key]) AT[key]=[];
-  AT[key].push({text:txt,color:tplColor,emoji:tplEmoji,heure:document.getElementById('tplHeureIn').value||'',duree:document.getElementById('tplDureeIn').value||'',desc:''});
+  var atelier={
+    text:txt, titre:txt,  // stocker les deux pour compatibilité
+    color:tplColor,
+    emoji:tplEmoji,
+    heure:document.getElementById('tplHeureIn').value||'',
+    duree:document.getElementById('tplDureeIn').value||'',
+    desc:'',
+    created_at: new Date().toISOString()
+  };
+  AT[key].push(atelier);
   saveAtelier(key); closeTplSheet(); rDP(); rCal();
   if (jView==='week') rWeek();
   if (jView==='day') {tsActive=null;rDay();}
